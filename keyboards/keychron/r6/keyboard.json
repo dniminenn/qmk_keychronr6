@@ -902,20 +902,27 @@
     "rgb_matrix": {
         "driver": "snled27351_spi",
         "animations": {
+            "band_spiral_val": true,
             "breathing": true,
             "cycle_all": true,
             "cycle_left_right": true,
-            "cycle_up_down": true,
-            "rainbow_moving_chevron": true,
             "cycle_out_in": true,
-            "dual_beacon": true,
-            "rainbow_beacon": true,
-            "jellybean_raindrops": true,
-            "typing_heatmap": true,
+            "cycle_out_in_dual": true,
+            "cycle_pinwheel": true,
+            "cycle_spiral": true,
+            "cycle_up_down": true,
             "digital_rain": true,
+            "dual_beacon": true,
+            "jellybean_raindrops": true,
+            "pixel_rain": true,
+            "rainbow_beacon": true,
+            "rainbow_moving_chevron": true,
+            "solid_reactive_multinexus": true,
+            "solid_reactive_multiwide": true,
             "solid_reactive_simple": true,
+            "solid_splash": true,
             "splash": true,
-            "solid_splash": true
+            "typing_heatmap": true
         }
     }
 }

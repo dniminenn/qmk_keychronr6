@@ -172,6 +172,44 @@ static void charge_indicator_task(void) {
 }
 #endif
 
+#ifdef RGB_MATRIX_ENABLE
+#    include "rgb_matrix.h"
+#    include "lib/lib8tion/lib8tion.h"
+
+/* Defined (weak) in rgb_matrix.c but not exposed in any header. */
+rgb_t rgb_matrix_hsv_to_rgb(hsv_t hsv);
+
+/* Jellybean Raindrops and Pixel Rain only repaint one random LED per tick, so
+ * the lock indicator's red lingers on the Num/Caps key after unlock until a
+ * drop happens to land there. On the falling edge, repaint that LED with the
+ * same random-color formula the running effect uses. */
+static void r6_sparse_effect_repaint(uint8_t index) {
+    if (!rgb_matrix_is_enabled()) return;
+    hsv_t hsv;
+    switch (rgb_matrix_get_mode()) {
+        case RGB_MATRIX_JELLYBEAN_RAINDROPS:
+            hsv = (hsv_t){random8(), random8_min_max(127, 255), rgb_matrix_get_val()};
+            break;
+        case RGB_MATRIX_PIXEL_RAIN:
+            hsv = (random8() & 2) ? (hsv_t){0, 0, 0} : (hsv_t){random8(), random8_min_max(127, 255), rgb_matrix_get_val()};
+            break;
+        default:
+            return;
+    }
+    rgb_t rgb = rgb_matrix_hsv_to_rgb(hsv);
+    rgb_matrix_set_color(index, rgb.r, rgb.g, rgb.b);
+}
+
+/* keychron_common.c owns led_update_kb; it calls this hook first. */
+bool led_update_user(led_t led_state) {
+    static led_t prev_led_state = {0};
+    if (prev_led_state.num_lock && !led_state.num_lock) r6_sparse_effect_repaint(NUM_LOCK_INDEX);
+    if (prev_led_state.caps_lock && !led_state.caps_lock) r6_sparse_effect_repaint(CAPS_LOCK_INDEX);
+    prev_led_state = led_state;
+    return true;
+}
+#endif
+
 void eeconfig_init_kb(void) {
     default_layer_set(1U << WIN_BASE_LAYER);
     eeconfig_update_default_layer(1U << WIN_BASE_LAYER);
